@@ -18,7 +18,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--port', default='8765', help='Port for broadcasting')
     args = parser.parse_args()
 
-    start_server = websockets.serve(server, 'localhost', args.port)
+    start_server = websockets.serve(server, '0.0.0.0', args.port)
 
     asyncio.get_event_loop().run_until_complete(start_server)
     asyncio.get_event_loop().run_forever()
