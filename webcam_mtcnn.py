@@ -7,7 +7,7 @@ from facenet_pytorch import MTCNN
 # Detect if GPU is avalable
 #device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 device = torch.device('cpu')
-print('Running on device: {}'.format(device))
+print('Running MTCNN on device: {}'.format(device))
 
 # Create MTCNN object
 mtcnn = MTCNN(keep_all=True, device=device)
@@ -21,6 +21,7 @@ if vc.isOpened():
     rval, frame = vc.read()
 else:
     rval = False
+print('Camera online')
 
 # Main loop
 while rval:
@@ -49,6 +50,7 @@ while rval:
 
     key = cv2.waitKey(20)
     if key in [27, 81, 113]: # exit on ESC or Q
+        print('User quit')
         break
 
 cv2.destroyWindow("webcam mtcnn")
