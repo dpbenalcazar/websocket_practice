@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw, ImageFont
 from facenet_pytorch import MTCNN
 
 # Constants
-mesage = {
+cam_mesage = {
     'far': 'Acerquese a la cámara por favor',
     'ok': 'Tomando Foto',
     'close': 'Alejese de la cámara porfavor'
@@ -76,7 +76,7 @@ while rval:
         # Draw face and info
         draw = ImageDraw.Draw(frame_pil)
         draw.rectangle(box.tolist(), outline=color[dist], width=6)
-        draw.text(msg_xy[dist],mesage[dist],color[dist], font=font)
+        draw.text(msg_xy[dist],cam_mesage[dist],color[dist], font=font)
 
         # Convert back to opencv
         frame = cv2.cvtColor(np.array(frame_pil), cv2.COLOR_BGR2RGB)
@@ -87,18 +87,21 @@ while rval:
     cv2.imshow("face-recognition", frame)
 
     if cnt>=10: # exit on good distance
-        print('Face image obtained!')
+        print('Face image obtained')
         break
 
     key = cv2.waitKey(20)
     if key in [27, 81, 113]: # exit on ESC or Q
-        print('User quit')
+        print('User quit, no image obtained')
         break
 
-cv2.destroyWindow("face-recognition")
+
 vc.release()
+cv2.destroyWindow("face-recognition")
 
 if face:
     plt.imshow(face)
     plt.title('Rostro Capturado')
     plt.show()
+
+print('Done!')
