@@ -28,10 +28,10 @@ font = ImageFont.truetype("arial.ttf", 32)
 # Detect if GPU is avalable
 #device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 device = torch.device('cpu')
-print('Running MTCNN on device: {}'.format(device))
 
 # Create MTCNN object
 mtcnn = MTCNN(keep_all=True, device=device)
+print('Running MTCNN on device: {}'.format(device))
 
 async def facial_server(websocket):
     cnt = 0
