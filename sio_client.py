@@ -26,21 +26,24 @@ def disconnect():
 # Define an event handler reading webcam
 @sio.event
 def receive_frame(data):  
-    global p_frame
+    global p_frame, continuar
      # Receive processed frame from server
     arr = np.frombuffer(data, np.uint8)  # Convert data to numpy array
     p_frame = cv2.imdecode(arr, cv2.IMREAD_COLOR)  # Decode numpy array into OpenCV frame
+    continuar = True
 
 @sio.event
 def receive_face(data):  
     global face
-     # Receive processed frame from server
+    # Receive processed frame from server
     arr = np.frombuffer(data, np.uint8)  # Convert data to numpy array
-    face = cv2.imdecode(arr, cv2.IMREAD_COLOR)  # Decode numpy array into OpenCV frame
-
+    data = cv2.imdecode(arr, cv2.IMREAD_COLOR)  # Decode numpy array into OpenCV frame
+    face = cv2.cvtColor(data, cv2.COLOR_BGR2RGB)
+    print('Face Received!')
+    print(face.shape)
 
 def client_main():
-    global p_frame, face
+    global p_frame, face, continuar
     
     # Create window
     cv2.namedWindow("face-recognition")
@@ -61,12 +64,15 @@ def client_main():
         ret, jpeg = cv2.imencode('.jpg', frame)  # Encode image as JPEG
         data = jpeg.tobytes()  # Convert image to bytes
         sio.emit('process_frame', data)
+        continuar = False
 
         # Display processed frame
+        while not continuar:
+            pass
         cv2.imshow("face-recognition", p_frame)
 
         # Check if user wants to quit
-        key = cv2.waitKey(20)
+        key = cv2.waitKey(10)
         if key in [27, 81, 113]: # exit on ESC or Q
             print('User quit, no image obtained')
             break
@@ -74,25 +80,10 @@ def client_main():
         # Check server control mesage
         if face is not None:
             print('Face capture successful')
-            face = True
             break
 
     vc.release()
     cv2.destroyWindow("face-recognition")
-
-    if face:
-        # Receive best face
-        arr = np.frombuffer(data, np.uint8)  # Convert data to numpy array
-        frame = cv2.imdecode(arr, cv2.IMREAD_COLOR)  # Decode numpy array into OpenCV frame
-        face = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB) 
-
-        # Show face image
-        plt.imshow(face)
-        plt.title('Rostro Capturado')
-        plt.show()
-
-    sio.disconnect()
-    print('Done!')
 
 
 if __name__ == '__main__':
@@ -102,7 +93,16 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     url = 'http://{}:{}'.format(args.ip, args.port)
+
     sio.connect(url)
     client_main()
+    while face is None:
+        pass
+    sio.disconnect()
+    # Show face image
+    plt.imshow(face)
+    plt.title('Rostro Capturado')
+    plt.show()
+    print('Done!')
     
     

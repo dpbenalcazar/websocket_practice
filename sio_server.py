@@ -42,6 +42,8 @@ print('Running MTCNN on device: {}'.format(device))
 # Define an event handler for connection
 @sio.event
 def connect(sid, environ):
+    global cnt
+    cnt = 0
     print('Client connected:', sid)
 
 # Define an event handler for disconnection
@@ -52,7 +54,7 @@ def disconnect(sid):
 # Define an event handler for frame processing
 @sio.event
 def process_frame(sid, data):
-    cnt = 0
+    global cnt
     face = None
 
     # Receive frame
@@ -100,6 +102,7 @@ def process_frame(sid, data):
 
     # Exit on good distance
     if cnt>=10: 
+        print('Face found!')
         # Send extracted face
         face = cv2.cvtColor(np.array(face), cv2.COLOR_BGR2RGB)
         ret, jpeg = cv2.imencode('.jpg', face)  # Encode image as JPEG

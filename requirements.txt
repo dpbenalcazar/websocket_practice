@@ -1,0 +1,6 @@
+opencv-python>=4.7
+pillow
+matplotlib
+python-socketio
+eventlet
+websockets
